@@ -3,6 +3,18 @@ package studio6;
 import jssc.*;
 
 public class SerialComm {
+	
+	public static void main(String[] args) throws SerialPortException{
+		
+		SerialComm sc = new SerialComm("/dev/cu.usbserial-DN02B0FP");
+		while(true){
+			if(sc.available()){
+				byte b = sc.readByte();
+				System.out.print((char) b);
+			}
+		}
+		
+	}
 
 	SerialPort port;
 
@@ -26,11 +38,46 @@ public class SerialComm {
 		debug = false; // Default is to NOT be in debug mode
 	}
 		
-	// TODO: Add writeByte() method from Studio 5
+	// TODO: Add writeByte() method to write data to serial port
 	
-	// TODO: Add available() method
+	void write(int singleByte){
+		byte b = (byte) singleByte;
+		
+		try {
+			
+			port.writeByte((byte) singleByte);
+			System.out.println(b);
+		} catch (SerialPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
 	
-	// TODO: Add readByte() method	
+	boolean available(){
+		try {
+			return port.getInputBufferBytesCount() > 0;
+		} catch (SerialPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 	
-	// TODO: Add a main() method
+	byte readByte(){
+		byte[] bites;
+		try {
+			bites = port.readBytes(1);
+			if(debug){
+				System.out.print(" " + String.format("%#x", bites[0]));
+			}
+			return bites[0];
+		} catch (SerialPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
 }
